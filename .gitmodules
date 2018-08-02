@@ -1,0 +1,3 @@
+[submodule "UnitySplines"]
+	path = UnitySplines
+	url = https://github.com/vdvman1/UnitySplines.git
