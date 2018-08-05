@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using VDV.Spline;
 using VDV.Utility;
@@ -87,7 +86,8 @@ namespace VDV.FoggyBoundary
             }
         }
 
-        public void OnPropertyChanged(SerializedProperty prop)
+#if UNITY_EDITOR
+        public void OnPropertyChanged(UnityEditor.SerializedProperty prop)
         {
             switch (prop.name)
             {
@@ -121,5 +121,6 @@ namespace VDV.FoggyBoundary
                     break;
             }
         }
-    } 
+    }
+#endif
 }
