@@ -15,10 +15,10 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 8
   m_Fog: 1
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  m_FogMode: 3
+  m_FogColor: {r: 0.41295412, g: 0.76784384, b: 0.83823526, a: 1}
+  m_FogMode: 1
   m_FogDensity: 0
-  m_LinearFogStart: 0
+  m_LinearFogStart: 10
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
@@ -255,12 +255,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 195942776}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.09, y: 0, z: 9.49}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 790372526}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &790372524
 GameObject:
@@ -290,9 +290,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BoundaryTag: foggyBoundary
-  fogStartDistance: 10
-  minFogDensity: 0
-  maxFogDensity: 1
+  FogStartDistance: 10
+  FogEndDistanceMinimum: 2
+  FogEndDistanceMaximum: 300
+  FogStartDistanceMinimum: 1
+  FogStartDistanceMaximum: 10
 --- !u!4 &790372526
 Transform:
   m_ObjectHideFlags: 0
@@ -300,10 +302,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 790372524}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.19}
+  m_LocalPosition: {x: 0, y: 0, z: -15.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1994479749}
+  - {fileID: 195942780}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -335,10 +338,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points:
-  - {x: -27.279722, y: 0, z: -0.4860134}
-  - {x: 7.8600807, y: 0, z: 0.83322525}
-  - {x: 8.693924, y: 0, z: 1.912101}
-  - {x: 5.167098, y: -1.9794235, z: -35.12482}
+  - {x: -10, y: 0, z: 0}
+  - {x: 10, y: 0, z: 0}
+  - {x: 3.151247, y: 0, z: -8.006401}
   loop: 0
 --- !u!4 &1933295881
 Transform:
