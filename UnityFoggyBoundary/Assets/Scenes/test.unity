@@ -338,9 +338,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points:
-  - Position: {x: 1, y: 0, z: 0}
+  - Position: {x: -9.42, y: 0, z: 0}
     Normal: {x: 0.57735026, y: 0.57735026, z: 0.57735026}
-  - Position: {x: 2.0438597, y: 0, z: -0.23991492}
+  - Position: {x: 6.65, y: 0, z: 0}
     Normal: {x: 0.4984892, y: 0.19892098, z: 0.8437648}
   loop: 0
 --- !u!4 &1933295881
