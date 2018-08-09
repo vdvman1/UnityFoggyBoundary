@@ -6,7 +6,7 @@ using UnityEngine;
 namespace VDV.FoggyBoundary
 {
     [CustomEditor(typeof(BoundaryFogViewer))]
-    public class FoggyBoundaryViewerEditor : Editor
+    public class FoggyBoundaryViewerEditor : UnityEditor.Editor
     {
 
         public override void OnInspectorGUI()
