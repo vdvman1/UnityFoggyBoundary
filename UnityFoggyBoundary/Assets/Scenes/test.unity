@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.57481706, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -291,10 +291,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BoundaryTag: foggyBoundary
   FogStartDistance: 10
-  FogEndDistanceMinimum: 2
-  FogEndDistanceMaximum: 300
-  FogStartDistanceMinimum: 1
-  FogStartDistanceMaximum: 10
+  MaxFog: 1
+  FogCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!4 &790372526
 Transform:
   m_ObjectHideFlags: 0
@@ -302,7 +317,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 790372524}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -15.97}
+  m_LocalPosition: {x: 0, y: 0, z: -19.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1994479749}
@@ -339,9 +354,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   points:
   - Position: {x: -9.42, y: 0, z: 0}
-    Normal: {x: 0.57735026, y: 0.57735026, z: 0.57735026}
+    Normal: {x: 0, y: 0, z: 1}
   - Position: {x: 6.65, y: 0, z: 0}
-    Normal: {x: 0.4984892, y: 0.19892098, z: 0.8437648}
+    Normal: {x: 0, y: 0, z: 1}
   loop: 0
 --- !u!4 &1933295881
 Transform:

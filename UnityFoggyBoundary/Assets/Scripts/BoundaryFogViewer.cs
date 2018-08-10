@@ -7,23 +7,20 @@ using VDV.Utility;
 
 namespace VDV.FoggyBoundary
 {
-    public class BoundaryFogViewer: MonoBehaviour
+    public class BoundaryFogViewer : MonoBehaviour
     {
-        [TagSelector]
-        public string BoundaryTag = "foggyBoundary";
+        [TagSelector] public string BoundaryTag = "foggyBoundary";
         public float FogStartDistance;
-        public float FogEndDistanceMinimum;
-        public float FogEndDistanceMaximum;
-        public float FogStartDistanceMinimum;
-        public float FogStartDistanceMaximum;
+        [Range(0, 1)]
+        public float MaxFog;
+        public AnimationCurve FogCurve;
 
         private Boundary[] boundary;
         private Transform myTransform;
         private bool inFogRange = false;
         private bool prevFog;
         private FogMode prevFogMode;
-        private float prevFogStartDistance;
-        private float prevFogEndDistance;
+        private float prevFogDensity;
 
         void Start()
         {
@@ -42,85 +39,91 @@ namespace VDV.FoggyBoundary
                 else
                 {
                     GameObject[] boundaryGameObjects = GameObject.FindGameObjectsWithTag(BoundaryTag);
-                    boundary = boundaryGameObjects.Select(go => go.GetComponent<Boundary>()).Where(line => line != null).ToArray();
+                    boundary =
+                        boundaryGameObjects.Select(go => go.GetComponent<Boundary>())
+                            .Where(line => line != null)
+                            .ToArray();
                 }
             }
 
             var min = new Helper.LinePoint {Distance = Mathf.Infinity};
+            Boundary closestLine = null;
             foreach (Boundary line in boundary)
             {
                 Helper.LinePoint point = line.ClosestPoint(myTransform.position);
                 if (point.Distance < min.Distance)
                 {
                     min = point;
+                    closestLine = line;
                 }
             }
-            if (min.Distance <= FogStartDistance)
+            if (closestLine != null)
             {
-//                Debug.Log(min.Distance);
-                float fogFactor = min.Distance / FogStartDistance;
-                if (!inFogRange)
+                BoundaryVertex pointA = closestLine.GetPoint(min.Index);
+                Vector3 normal = pointA.Normal.normalized;
+                if (min.Index < closestLine.PointCount - 1 && min.ProjectionDistance > 0)
                 {
-                    prevFog = RenderSettings.fog;
-                    prevFogMode = RenderSettings.fogMode;
-                    prevFogStartDistance = RenderSettings.fogStartDistance;
-                    prevFogEndDistance = RenderSettings.fogEndDistance;
+                    BoundaryVertex pointB = closestLine.GetPoint(min.Index + 1);
+                    normal = Vector3.Lerp(normal, pointB.Normal.normalized, min.ProjectionDistance);
                 }
-                inFogRange = true;
-                RenderSettings.fog = true;
-                RenderSettings.fogStartDistance = Mathf.Lerp(FogStartDistanceMinimum, FogStartDistanceMaximum, fogFactor);
-                RenderSettings.fogEndDistance = Mathf.Lerp(FogEndDistanceMinimum, FogEndDistanceMaximum, fogFactor);
-                Debug.Log(string.Format("fogStartDistance: {0}, fogEndDistance: {1}", RenderSettings.fogStartDistance, RenderSettings.fogEndDistance));
-                Debug.Log(fogFactor);
+                float dot = Vector3.Dot(myTransform.position - min.Point, normal);
+                if (dot > 0)
+                {
+                    ShowFog(1);
+                }
+                else if (min.Distance <= FogStartDistance)
+                {
+                    float fogFactor = 1 - min.Distance / FogStartDistance;
+                    dot = Vector3.Dot(myTransform.forward, normal);
+                    if (dot <= 0)
+                    {
+                        ResetFog();
+                    }
+                    else
+                    {
+                        fogFactor *= dot;
+                        ShowFog(fogFactor);
+                    }
+                }
+                else
+                {
+                    ResetFog();
+                }
             }
             else
             {
-                if (inFogRange)
-                {
-                    RenderSettings.fog = prevFog;
-                    RenderSettings.fogMode = prevFogMode;
-                    RenderSettings.fogStartDistance = prevFogStartDistance;
-                    RenderSettings.fogEndDistance = prevFogEndDistance;
-                }
-                inFogRange = false;
+                ResetFog();
             }
         }
 
-#if UNITY_EDITOR
-        public void OnPropertyChanged(UnityEditor.SerializedProperty prop)
+        private void ResetFog()
         {
-            switch (prop.name)
+            if (inFogRange)
             {
-                case "BoundaryTag":
-                    BoundaryTag = prop.stringValue;
-                    break;
-                case "FogStartDistance":
-                    FogStartDistance = Mathf.Max(prop.floatValue, 0);
-                    break;
-                case "FogEndDistanceMinimum":
-                    FogEndDistanceMinimum = Mathf.Max(prop.floatValue, 0);
-                    FogEndDistanceMaximum = Mathf.Max(FogEndDistanceMinimum, FogEndDistanceMaximum);
-                    FogStartDistanceMinimum = Mathf.Min(FogStartDistanceMinimum, FogEndDistanceMinimum);
-                    break;
-                case "FogEndDistanceMaximum":
-                    FogEndDistanceMaximum = Mathf.Max(prop.floatValue, 0);
-                    FogEndDistanceMinimum = Mathf.Min(FogEndDistanceMinimum, FogEndDistanceMaximum);
-                    FogStartDistanceMaximum = Mathf.Min(FogStartDistanceMaximum, FogEndDistanceMaximum);
-                    FogStartDistanceMinimum = Mathf.Min(FogStartDistanceMinimum, FogEndDistanceMaximum);
-                    break;
-                case "FogStartDistanceMinimum":
-                    FogStartDistanceMinimum = Mathf.Max(prop.floatValue, 0);
-                    FogStartDistanceMaximum = Mathf.Max(FogStartDistanceMaximum, FogStartDistanceMinimum);
-                    FogEndDistanceMaximum = Mathf.Max(FogEndDistanceMaximum, FogStartDistanceMinimum);
-                    FogEndDistanceMinimum = Mathf.Max(FogEndDistanceMinimum, FogStartDistanceMinimum);
-                    break;
-                case "FogStartDistanceMaximum":
-                    FogStartDistanceMaximum = Mathf.Max(prop.floatValue, 0);
-                    FogStartDistanceMinimum = Mathf.Min(FogStartDistanceMinimum, FogStartDistanceMaximum);
-                    FogEndDistanceMaximum = Mathf.Max(FogEndDistanceMaximum, FogStartDistanceMaximum);
-                    break;
+                RenderSettings.fog = prevFog;
+                RenderSettings.fogMode = prevFogMode;
+                RenderSettings.fogDensity = prevFogDensity;
             }
+            inFogRange = false;
+        }
+
+        private void ShowFog(float fogFactor)
+        {
+            if (!inFogRange)
+            {
+                prevFog = RenderSettings.fog;
+                prevFogMode = RenderSettings.fogMode;
+                prevFogDensity = RenderSettings.fogDensity;
+            }
+            inFogRange = true;
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.ExponentialSquared;
+            RenderSettings.fogDensity = Mathf.Clamp01(Mathf.Lerp(prevFogDensity, MaxFog, FogCurve.Evaluate(fogFactor)));
+        }
+
+        void OnValidate()
+        {
+            FogStartDistance = Mathf.Max(0, FogStartDistance);
         }
     }
-#endif
 }
