@@ -39,6 +39,7 @@ namespace VDV.FoggyBoundary.Editor
 
             EditorGUI.BeginChangeCheck();
             Vector3 destination = Handles.DoPositionHandle(pos + point.Normal, HandleTransform);
+            destination = LineTransform.InverseTransformPoint(destination);
             if (!EditorGUI.EndChangeCheck()) return;
 
             Undo.RecordObject(Line, "Move Normal");
