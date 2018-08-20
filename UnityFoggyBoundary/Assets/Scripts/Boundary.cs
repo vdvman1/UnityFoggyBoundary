@@ -12,8 +12,8 @@ namespace VDV.FoggyBoundary
             var min = new Helper.LinePoint { Distance = Mathf.Infinity };
             for (var i = 1; i < points.Count; i++)
             {
-                Vector3 a = points[i - 1].Position;
-                Vector3 b = points[i].Position;
+                Vector3 a = transform.TransformPoint(points[i - 1].Position);
+                Vector3 b = transform.TransformPoint(points[i].Position);
 
                 Helper.LinePoint point = Helper.PointToLine(pos, a, b, i - 1);
                 if (point.Distance < min.Distance)
