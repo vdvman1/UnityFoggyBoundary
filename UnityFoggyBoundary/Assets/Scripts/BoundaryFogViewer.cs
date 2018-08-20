@@ -83,6 +83,7 @@ namespace VDV.FoggyBoundary
                     BoundaryVertex pointB = closestLine.GetPoint(min.Index + 1);
                     normal = Vector3.Lerp(normal, pointB.Normal.normalized, min.ProjectionDistance);
                 }
+                normal = closestLine.transform.TransformDirection(normal);
                 float lookDot = Vector3.Dot(myTransform.forward, normal);
                 float dot = Vector3.Dot(myTransform.position - min.Point, normal);
                 if (lookDot <= 0)
