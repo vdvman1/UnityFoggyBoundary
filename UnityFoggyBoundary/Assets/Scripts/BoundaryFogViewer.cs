@@ -25,26 +25,24 @@ namespace VDV.FoggyBoundary
         void Start()
         {
             myTransform = transform;
+            // FindGameObjectsWithTag doesn't support "Untagged"
+            if (BoundaryTag == "Untagged")
+            {
+                boundary = FindObjectsOfType<Boundary>().Where(go => go.CompareTag(BoundaryTag)).ToArray();
+            }
+            else
+            {
+                GameObject[] boundaryGameObjects = GameObject.FindGameObjectsWithTag(BoundaryTag);
+                boundary =
+                    boundaryGameObjects.Select(go => go.GetComponent<Boundary>())
+                        .Where(line => line != null)
+                        .ToArray();
+            }
         }
 
         void Update()
         {
-            if (boundary == null)
-            {
-                // FindGameObjectsWithTag doesn't support "Untagged"
-                if (BoundaryTag == "Untagged")
-                {
-                    boundary = FindObjectsOfType<Boundary>().Where(go => go.tag == BoundaryTag).ToArray();
-                }
-                else
-                {
-                    GameObject[] boundaryGameObjects = GameObject.FindGameObjectsWithTag(BoundaryTag);
-                    boundary =
-                        boundaryGameObjects.Select(go => go.GetComponent<Boundary>())
-                            .Where(line => line != null)
-                            .ToArray();
-                }
-            }
+            if(boundary == null) return;
 
             var min = new Helper.LinePoint {Distance = Mathf.Infinity};
             Boundary closestLine = null;
