@@ -26,7 +26,8 @@ namespace VDV.FoggyBoundary.Editor
         {
             EventType eventType = Event.current.type;
             int arrowId = GUIUtility.GetControlID(FocusType.Passive);
-            RenderNormal(pos, point.Normal, eventType, arrowId);
+            Vector3 dir = LineTransform.TransformDirection(point.Normal);
+            RenderNormal(pos, dir, eventType, arrowId);
             if (eventType == EventType.MouseDown)
             {
                 if (HandleUtility.nearestControl == arrowId)
@@ -38,7 +39,7 @@ namespace VDV.FoggyBoundary.Editor
             if (selectedNormalIndex != index) return;
 
             EditorGUI.BeginChangeCheck();
-            Vector3 destination = Handles.DoPositionHandle(pos + point.Normal, HandleTransform);
+            Vector3 destination = Handles.DoPositionHandle(pos + dir, HandleTransform);
             destination = LineTransform.InverseTransformPoint(destination);
             if (!EditorGUI.EndChangeCheck()) return;
 
