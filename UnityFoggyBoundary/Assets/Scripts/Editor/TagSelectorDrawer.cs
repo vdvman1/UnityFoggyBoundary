@@ -33,7 +33,10 @@ namespace VDV.Utility
             string currentTag = property.stringValue;
             index = Array.IndexOf(tags, currentTag);
             index = EditorGUI.Popup(position, label.text, index, tags);
-            property.stringValue = tags[index];
+            if (index >= 0 && index < tags.Length)
+            {
+                property.stringValue = tags[index];
+            }
 
             EditorGUI.EndProperty();
         }
