@@ -10,6 +10,7 @@ using VDV.Utility;
 
 namespace VDV.FoggyBoundary
 {
+    [RequireComponent(typeof(PlayerAccessor))]
     public class BoundaryFogViewer : MonoBehaviour
     {
         [TagSelector] public string BoundaryTag = "foggyBoundary";
@@ -27,10 +28,7 @@ namespace VDV.FoggyBoundary
         private FogMode prevFogMode;
         private float prevFogDensity;
 
-        private FirstPersonController fpsController;
-        private FieldInfo walkSpeedField;
-        private FieldInfo runSpeedField;
-        private FieldInfo moveDirField;
+        private PlayerAccessor player;
 
         private float prevWalkSpeed = 0;
         private float prevRunSpeed = 0;
@@ -38,11 +36,7 @@ namespace VDV.FoggyBoundary
         void Start()
         {
             myTransform = transform;
-            fpsController = GetComponent<FirstPersonController>();
-            Type type = typeof(FirstPersonController);
-            walkSpeedField = type.GetField("m_WalkSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
-            runSpeedField = type.GetField("m_RunSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
-            moveDirField = type.GetField("m_MoveDir", BindingFlags.NonPublic | BindingFlags.Instance);
+            player = GetComponent<PlayerAccessor>();
 
             // FindGameObjectsWithTag doesn't support "Untagged"
             if (BoundaryTag == "Untagged")
@@ -93,10 +87,7 @@ namespace VDV.FoggyBoundary
                 else if (dot > 0)
                 {
                     ShowFog(lookDot);
-                    if (fpsController != null)
-                    {
-                        Slowdown(min.Distance, normal, lookDot);
-                    }
+                    Slowdown(min.Distance, lookDot);
                 }
                 else if (min.Distance <= FogStartDistance)
                 {
@@ -122,11 +113,8 @@ namespace VDV.FoggyBoundary
                 RenderSettings.fog = prevFog;
                 RenderSettings.fogMode = prevFogMode;
                 RenderSettings.fogDensity = prevFogDensity;
-                if (fpsController != null)
-                {
-                    walkSpeedField.SetValue(fpsController, prevWalkSpeed);
-                    runSpeedField.SetValue(fpsController, prevRunSpeed);
-                }
+                player.WalkSpeed = prevWalkSpeed;
+                player.RunSpeed = prevRunSpeed;
             }
             inFogRange = false;
         }
@@ -138,11 +126,8 @@ namespace VDV.FoggyBoundary
                 prevFog = RenderSettings.fog;
                 prevFogMode = RenderSettings.fogMode;
                 prevFogDensity = RenderSettings.fogDensity;
-                if (fpsController != null)
-                {
-                    prevWalkSpeed = (float) walkSpeedField.GetValue(fpsController);
-                    prevRunSpeed = (float) runSpeedField.GetValue(fpsController);
-                }
+                prevWalkSpeed = player.WalkSpeed;
+                prevRunSpeed = player.RunSpeed;
             }
             inFogRange = true;
             RenderSettings.fog = true;
@@ -150,19 +135,16 @@ namespace VDV.FoggyBoundary
             RenderSettings.fogDensity = Mathf.Clamp01(Mathf.Lerp(prevFogDensity, MaxFog, FogCurve.Evaluate(fogFactor)));
         }
 
-        private void Slowdown(float distance, Vector3 normal, float lookDot)
+        private void Slowdown(float distance, float lookDot)
         {
             float slowdownFactor = distance / SlowdownEndDistance;
             slowdownFactor = Mathf.Clamp01(slowdownFactor);
-            var moveDir = (Vector3) moveDirField.GetValue(fpsController);
+            Vector3 moveDir = player.MoveDir;
             moveDir.Normalize();
-            Debug.Log(moveDir);
-            float dot = Vector3.Dot(normal, moveDir);
             slowdownFactor *= lookDot;
-            Debug.Log(lookDot);
             slowdownFactor = SlowdownCurve.Evaluate(slowdownFactor);
-            walkSpeedField.SetValue(fpsController, Mathf.Lerp(prevWalkSpeed, 0, slowdownFactor));
-            runSpeedField.SetValue(fpsController, Mathf.Lerp(prevRunSpeed, 0, slowdownFactor));
+            player.WalkSpeed = Mathf.Lerp(prevWalkSpeed, 0, slowdownFactor);
+            player.RunSpeed = Mathf.Lerp(prevRunSpeed, 0, slowdownFactor);
         }
 
         void OnValidate()
