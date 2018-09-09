@@ -78,5 +78,10 @@ namespace VDV.FoggyBoundary.Editor
             EditorGUILayout.HelpBox("Boundaries that are not closed can cause jumps in the amount of fog when a player leaves the boundary.", MessageType.Warning);
             return true;
         }
+        
+        protected override string Title()
+        {
+            return "Boundary";
+        }
     }
 }
